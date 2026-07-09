@@ -57,45 +57,47 @@ export default function ExerciseSection({ exercises, onToggle, onRate, accent = 
   const [openVideo, setOpenVideo] = useState<ExerciseId | null>(null);
 
   const doneCount = EXERCISES.filter((ex) => exercises[ex.id].done).length;
-  const anyDone = doneCount > 0;
   const allDone = doneCount === EXERCISES.length;
 
-  const borderColor = accent === 'amber' ? 'border-amber-100' : 'border-blue-100';
+  const badgeColor = allDone
+    ? 'bg-emerald-100 text-emerald-600'
+    : doneCount > 0
+    ? 'bg-amber-100 text-amber-600'
+    : 'bg-gray-100 text-gray-400';
+
+  const accentBorder = accent === 'amber' ? 'border-amber-100' : 'border-violet-100';
+  const checkIdle = accent === 'amber'
+    ? 'bg-amber-50 border-2 border-amber-200 hover:border-amber-400'
+    : 'bg-violet-50 border-2 border-violet-200 hover:border-violet-400';
 
   return (
-    <div className={`rounded-2xl border overflow-hidden bg-white ${borderColor}`}>
-      {/* Cabeçalho */}
-      <div className={`px-4 pt-4 pb-3 flex items-center gap-2 ${allDone ? 'bg-green-50' : ''}`}>
-        <span className={`font-semibold text-base ${allDone ? 'text-green-700' : 'text-gray-700'}`}>
-          🏋️ Exercícios
-        </span>
-        <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-          allDone
-            ? 'bg-green-100 text-green-600'
-            : anyDone
-            ? 'bg-amber-100 text-amber-600'
-            : 'bg-gray-100 text-gray-400'
-        }`}>
+    <div className={`rounded-3xl border overflow-hidden bg-white shadow-sm ${accentBorder}`}>
+      <div className={`px-4 pt-4 pb-3 flex items-center justify-between ${allDone ? 'bg-emerald-50' : ''}`}>
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 bg-orange-100 rounded-xl flex items-center justify-center text-base">🏋️</div>
+          <span className={`font-black text-base ${allDone ? 'text-emerald-700' : 'text-gray-800'}`}>
+            Exercícios
+          </span>
+        </div>
+        <span className={`text-xs px-2.5 py-1 rounded-full font-bold ${badgeColor}`}>
           {doneCount}/{EXERCISES.length}
         </span>
       </div>
 
-      {/* Lista de exercícios */}
-      <div className="divide-y divide-gray-50">
+      <div className="divide-y divide-gray-50 px-3 pb-3">
         {EXERCISES.map((ex) => {
           const state = exercises[ex.id];
           const isOpen = openVideo === ex.id;
 
           return (
-            <div key={ex.id} className={`transition-all ${state.done ? 'bg-green-50' : 'bg-white'}`}>
-              {/* Linha principal */}
-              <div className="flex items-center gap-3 px-4 py-3">
+            <div key={ex.id} className="py-3">
+              <div className="flex items-center gap-3">
                 <button
                   onClick={() => onToggle(ex.id)}
-                  className={`w-7 h-7 rounded-lg border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+                  className={`w-9 h-9 rounded-2xl flex items-center justify-center flex-shrink-0 transition-all ${
                     state.done
-                      ? 'bg-green-500 border-green-500 text-white shadow-sm'
-                      : 'border-gray-300 hover:border-green-400 bg-white'
+                      ? 'bg-emerald-500 text-white shadow-md shadow-emerald-100'
+                      : checkIdle
                   }`}
                   aria-label={state.done ? 'Desmarcar' : 'Marcar como feito'}
                 >
@@ -103,12 +105,12 @@ export default function ExerciseSection({ exercises, onToggle, onRate, accent = 
                 </button>
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className={`font-medium text-sm ${state.done ? 'text-green-700' : 'text-gray-700'}`}>
-                      {ex.name}
-                    </span>
+                  <span className={`font-semibold text-sm block ${state.done ? 'text-emerald-700' : 'text-gray-800'}`}>
+                    {ex.name}
+                  </span>
+                  <div className="flex items-center gap-1.5 mt-0.5">
                     <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                      state.done ? 'bg-green-100 text-green-600' : 'bg-gray-100 text-gray-500'
+                      state.done ? 'bg-emerald-100 text-emerald-600' : 'bg-gray-100 text-gray-500'
                     }`}>
                       {ex.instructions}
                     </span>
@@ -120,9 +122,9 @@ export default function ExerciseSection({ exercises, onToggle, onRate, accent = 
 
                 <button
                   onClick={() => setOpenVideo(isOpen ? null : ex.id)}
-                  className={`flex-shrink-0 text-xs px-3 py-1.5 rounded-xl font-semibold transition-all ${
+                  className={`flex-shrink-0 text-xs px-3 py-2 rounded-xl font-bold transition-all ${
                     isOpen
-                      ? 'bg-red-100 text-red-600 hover:bg-red-200'
+                      ? 'bg-red-100 text-red-500 hover:bg-red-200'
                       : 'bg-indigo-100 text-indigo-600 hover:bg-indigo-200'
                   }`}
                 >
@@ -130,18 +132,16 @@ export default function ExerciseSection({ exercises, onToggle, onRate, accent = 
                 </button>
               </div>
 
-              {/* Estrelas individuais (aparecem quando o exercício é marcado) */}
               {state.done && (
-                <div className="px-4 pb-3">
-                  <p className="text-xs text-gray-400 mb-1">Como o Téo foi?</p>
+                <div className="mt-2.5 pl-12">
+                  <p className="text-xs text-gray-400 mb-1.5 font-medium">Como o Téo foi?</p>
                   <StarRating stars={state.stars} onChange={(stars) => onRate(ex.id, stars)} />
                 </div>
               )}
 
-              {/* Player de vídeo */}
               {isOpen && (
-                <div className="px-4 pb-4">
-                  <div className="rounded-2xl overflow-hidden bg-black shadow-md aspect-video">
+                <div className="mt-3">
+                  <div className="rounded-2xl overflow-hidden bg-black shadow-lg aspect-video">
                     <iframe
                       src={`https://www.youtube.com/embed/${ex.videoId}?start=${ex.startSeconds}&end=${ex.endSeconds}&autoplay=1&rel=0&modestbranding=1&playsinline=1`}
                       className="w-full h-full"
@@ -150,7 +150,7 @@ export default function ExerciseSection({ exercises, onToggle, onRate, accent = 
                       title={ex.name}
                     />
                   </div>
-                  <p className="text-xs text-gray-400 mt-2 text-center">
+                  <p className="text-xs text-gray-400 mt-1.5 text-center">
                     Trecho: {formatSeconds(ex.startSeconds)} – {formatSeconds(ex.endSeconds)}
                   </p>
                 </div>
