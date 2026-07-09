@@ -30,8 +30,6 @@ function formatDateLong(dateStr: string): string {
   });
 }
 
-// ── Checkbox simples (remédios e almoço) ──────────────────────────────────────
-
 function CheckRow({
   label,
   item,
@@ -46,31 +44,33 @@ function CheckRow({
   accent?: 'amber' | 'blue';
 }) {
   return (
-    <div className={`flex items-start gap-3 p-4 rounded-2xl border transition-all ${
+    <div className={`flex items-start gap-3 p-4 rounded-2xl transition-all ${
       item.done
-        ? 'bg-green-50 border-green-200'
+        ? 'bg-emerald-50 border border-emerald-100'
         : accent === 'amber'
-        ? 'bg-white border-amber-100 hover:border-amber-300'
-        : 'bg-white border-blue-100 hover:border-blue-300'
+        ? 'bg-white border border-amber-100 hover:border-amber-300 shadow-sm'
+        : 'bg-white border border-violet-100 hover:border-violet-300 shadow-sm'
     }`}>
       <button
         onClick={onToggle}
-        className={`mt-0.5 w-8 h-8 rounded-xl border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+        className={`mt-0.5 w-10 h-10 rounded-2xl border-2 flex items-center justify-center flex-shrink-0 transition-all ${
           item.done
-            ? 'bg-green-500 border-green-500 text-white shadow-sm'
-            : 'border-gray-300 hover:border-green-400 bg-white'
+            ? 'bg-emerald-500 border-emerald-500 text-white shadow-md shadow-emerald-100'
+            : accent === 'amber'
+            ? 'border-amber-200 bg-amber-50 hover:border-amber-400'
+            : 'border-violet-200 bg-violet-50 hover:border-violet-400'
         }`}
         aria-label={item.done ? 'Desmarcar' : 'Marcar como feito'}
       >
-        {item.done && <span className="text-base font-bold">✓</span>}
+        {item.done && <span className="text-lg font-bold">✓</span>}
       </button>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className={`font-semibold text-base ${item.done ? 'text-green-700' : 'text-gray-700'}`}>
+          <span className={`font-bold text-base ${item.done ? 'text-emerald-700' : 'text-gray-800'}`}>
             {label}
           </span>
           {item.time && (
-            <span className="text-xs text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full font-medium">
+            <span className="text-xs text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full">
               🕐 {item.time}
             </span>
           )}
@@ -80,8 +80,6 @@ function CheckRow({
     </div>
   );
 }
-
-// ── Página principal ──────────────────────────────────────────────────────────
 
 export default function Home() {
   const today = getBrasiliaDate();
@@ -133,8 +131,6 @@ export default function Home() {
     [save]
   );
 
-  // ── Remédios ──────────────────────────────────────────────────────────────
-
   const toggleMedicine = (med: 'kollis' | 'ferro' | 'vitaminaD') =>
     update((r) => {
       const item = r.morning.medicines[med];
@@ -142,8 +138,6 @@ export default function Home() {
       item.time = item.done ? getBrasiliaTime() : null;
       return r;
     });
-
-  // ── Água Manhã ────────────────────────────────────────────────────────────
 
   const updateMorningWater = (ml: number | null) =>
     update((r) => {
@@ -153,8 +147,6 @@ export default function Home() {
       if (!ml) r.morning.water.time = null;
       return r;
     });
-
-  // ── Fruta Manhã ───────────────────────────────────────────────────────────
 
   const toggleMorningFruit = () =>
     update((r) => {
@@ -178,8 +170,6 @@ export default function Home() {
   const rateMorningFruit = (stars: number) =>
     update((r) => { r.morning.fruit.stars = stars; return r; });
 
-  // ── Exercícios Manhã ──────────────────────────────────────────────────────
-
   const toggleMorningExercise = (id: ExerciseId) =>
     update((r) => {
       const ex = r.morning.exercises[id];
@@ -192,8 +182,6 @@ export default function Home() {
   const rateMorningExercise = (id: ExerciseId, stars: number) =>
     update((r) => { r.morning.exercises[id].stars = stars; return r; });
 
-  // ── Almoço ────────────────────────────────────────────────────────────────
-
   const toggleLunch = () =>
     update((r) => {
       r.afternoon.lunch.done = !r.afternoon.lunch.done;
@@ -205,8 +193,6 @@ export default function Home() {
   const rateLunch = (stars: number) =>
     update((r) => { r.afternoon.lunch.stars = stars; return r; });
 
-  // ── Água Tarde ────────────────────────────────────────────────────────────
-
   const updateAfternoonWater = (ml: number | null) =>
     update((r) => {
       const wasEmpty = !r.afternoon.water.ml;
@@ -215,8 +201,6 @@ export default function Home() {
       if (!ml) r.afternoon.water.time = null;
       return r;
     });
-
-  // ── Fruta Tarde ───────────────────────────────────────────────────────────
 
   const toggleAfternoonFruit = () =>
     update((r) => {
@@ -240,8 +224,6 @@ export default function Home() {
   const rateAfternoonFruit = (stars: number) =>
     update((r) => { r.afternoon.fruit.stars = stars; return r; });
 
-  // ── Exercícios Tarde ──────────────────────────────────────────────────────
-
   const toggleAfternoonExercise = (id: ExerciseId) =>
     update((r) => {
       const ex = r.afternoon.exercises[id];
@@ -254,14 +236,12 @@ export default function Home() {
   const rateAfternoonExercise = (id: ExerciseId, stars: number) =>
     update((r) => { r.afternoon.exercises[id].stars = stars; return r; });
 
-  // ── Render ────────────────────────────────────────────────────────────────
-
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-sky-50 to-indigo-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-orange-50 to-sky-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-7xl mb-4 animate-pulse">👶</div>
-          <p className="text-gray-500 font-medium">Carregando rotina do Téo...</p>
+          <div className="text-7xl mb-4 animate-bounce">👶</div>
+          <p className="text-gray-400 font-semibold">Carregando rotina do Téo...</p>
         </div>
       </div>
     );
@@ -269,13 +249,13 @@ export default function Home() {
 
   if (error || !record) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-sky-50 to-indigo-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-b from-orange-50 to-sky-50 flex items-center justify-center">
         <div className="text-center">
           <div className="text-5xl mb-4">⚠️</div>
-          <p className="text-red-500 font-medium">Erro ao carregar os dados.</p>
+          <p className="text-red-500 font-semibold">Erro ao carregar os dados.</p>
           <button
             onClick={() => window.location.reload()}
-            className="mt-4 px-5 py-2 bg-indigo-600 text-white rounded-xl font-medium hover:bg-indigo-700"
+            className="mt-4 px-6 py-3 bg-orange-500 text-white rounded-2xl font-bold hover:bg-orange-600 shadow-lg shadow-orange-100"
           >
             Tentar novamente
           </button>
@@ -287,39 +267,59 @@ export default function Home() {
   const { morning, afternoon } = record;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-50 to-indigo-50">
-      <div className="max-w-xl mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gradient-to-b from-orange-50 via-rose-50/20 to-sky-50">
+      <div className="max-w-xl mx-auto px-4 py-6 pb-10">
 
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="text-6xl mb-2">👶</div>
-          <h1 className="text-3xl font-bold text-gray-800 tracking-tight">Rotina do Téo</h1>
-          <p className="text-gray-500 mt-1 capitalize text-sm">{formatDateLong(today)}</p>
-          <div className="flex items-center justify-center gap-3 mt-3 text-xs text-gray-400">
-            <Link href="/historico" className="text-indigo-600 hover:text-indigo-800 font-semibold text-sm underline underline-offset-2">
-              📋 Ver histórico
-            </Link>
-            <span>·</span>
-            {saving
-              ? <span className="animate-pulse">Salvando...</span>
-              : lastSaved
-              ? <span>Salvo às {lastSaved}</span>
-              : <span>Nenhuma alteração ainda</span>
-            }
+        <div className="relative overflow-hidden rounded-3xl mb-6 bg-gradient-to-br from-amber-400 via-orange-400 to-rose-400 p-6 shadow-xl shadow-orange-100">
+          <div className="relative z-10 text-center">
+            <div className="flex justify-center mb-3">
+              <img
+                src="/teo.jpeg"
+                alt="Téo"
+                className="w-20 h-20 rounded-full object-cover border-4 border-white/50 shadow-lg"
+              />
+            </div>
+            <h1 className="text-2xl font-black text-white tracking-tight">Rotina do Téo</h1>
+            <p className="text-orange-100 text-sm capitalize mt-1">{formatDateLong(today)}</p>
+            <div className="flex items-center justify-center gap-3 mt-4">
+              <Link
+                href="/historico"
+                className="text-white text-xs font-bold bg-white/25 px-4 py-2 rounded-full hover:bg-white/35 transition-all"
+              >
+                📋 Histórico
+              </Link>
+              <span className={`text-xs px-4 py-2 rounded-full font-semibold ${
+                saving
+                  ? 'bg-white/20 text-white/80 animate-pulse'
+                  : lastSaved
+                  ? 'bg-white/25 text-white'
+                  : 'bg-white/15 text-white/60'
+              }`}>
+                {saving ? '⏳ Salvando...' : lastSaved ? `✓ ${lastSaved}` : 'Sem alterações'}
+              </span>
+            </div>
           </div>
+          <div className="absolute -top-6 -right-6 w-28 h-28 bg-white/10 rounded-full pointer-events-none" />
+          <div className="absolute -bottom-8 -left-8 w-36 h-36 bg-white/10 rounded-full pointer-events-none" />
+          <div className="absolute top-4 left-8 w-3 h-3 bg-white/30 rounded-full pointer-events-none" />
+          <div className="absolute bottom-6 right-10 w-2 h-2 bg-white/30 rounded-full pointer-events-none" />
         </div>
 
-        {/* ══ MANHÃ ══════════════════════════════════════════════════════════ */}
         <section className="mb-6">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-2xl">🌅</span>
-            <h2 className="text-xl font-bold text-amber-700">Manhã</h2>
+          <div className="flex items-center gap-3 mb-4 px-1">
+            <div className="w-10 h-10 bg-amber-100 rounded-2xl flex items-center justify-center text-xl shadow-sm">🌅</div>
+            <div>
+              <h2 className="text-lg font-black text-gray-800">Manhã</h2>
+              <p className="text-xs text-gray-400">Remédios, água, fruta e exercícios</p>
+            </div>
           </div>
 
           <div className="space-y-3">
-            {/* Remédios */}
-            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4">
-              <p className="text-xs font-bold text-amber-600 uppercase tracking-widest mb-3">💊 Remédios</p>
+            <div className="bg-white rounded-3xl shadow-sm border border-amber-50 p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-lg">💊</span>
+                <p className="text-xs font-black text-amber-600 uppercase tracking-widest">Remédios</p>
+              </div>
               <div className="space-y-2">
                 <CheckRow label="Kollis" item={morning.medicines.kollis} onToggle={() => toggleMedicine('kollis')} accent="amber" />
                 <CheckRow label="Ferro" item={morning.medicines.ferro} onToggle={() => toggleMedicine('ferro')} accent="amber" />
@@ -327,10 +327,8 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Água */}
             <WaterInput item={morning.water} onUpdate={updateMorningWater} accent="amber" />
 
-            {/* Fruta */}
             <FruitPicker
               label="🍌 Fruta"
               item={morning.fruit}
@@ -340,7 +338,6 @@ export default function Home() {
               accent="amber"
             />
 
-            {/* Exercícios */}
             <ExerciseSection
               exercises={morning.exercises}
               onToggle={toggleMorningExercise}
@@ -350,26 +347,33 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ══ TARDE ══════════════════════════════════════════════════════════ */}
+        <div className="flex items-center gap-3 my-6 px-4">
+          <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-200 to-gray-200" />
+          <span className="text-gray-300 text-sm">✦</span>
+          <div className="flex-1 h-px bg-gradient-to-l from-transparent via-gray-200 to-gray-200" />
+        </div>
+
         <section className="mb-8">
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-2xl">☀️</span>
-            <h2 className="text-xl font-bold text-blue-700">Tarde</h2>
+          <div className="flex items-center gap-3 mb-4 px-1">
+            <div className="w-10 h-10 bg-violet-100 rounded-2xl flex items-center justify-center text-xl shadow-sm">☀️</div>
+            <div>
+              <h2 className="text-lg font-black text-gray-800">Tarde</h2>
+              <p className="text-xs text-gray-400">Almoço, água, fruta e exercícios</p>
+            </div>
           </div>
 
           <div className="space-y-3">
-            {/* Almoço */}
             <CheckRow label="🍽️ Almoço" item={afternoon.lunch} onToggle={toggleLunch} accent="blue">
               {afternoon.lunch.done && (
                 <div>
-                  <p className="text-xs text-gray-500 mb-1 font-medium">Como o Téo comeu?</p>
-                  <div className="flex gap-1">
+                  <p className="text-xs text-gray-400 mb-2 font-semibold uppercase tracking-wide">Como o Téo comeu?</p>
+                  <div className="flex gap-1.5">
                     {[1, 2, 3, 4, 5].map((s) => (
                       <button
                         key={s}
                         onClick={() => rateLunch(s === afternoon.lunch.stars ? 0 : s)}
                         className={`text-3xl transition-all hover:scale-110 active:scale-95 leading-none ${
-                          s <= afternoon.lunch.stars ? 'text-yellow-400' : 'text-gray-200'
+                          s <= afternoon.lunch.stars ? 'text-amber-400' : 'text-gray-200'
                         }`}
                       >★</button>
                     ))}
@@ -378,10 +382,8 @@ export default function Home() {
               )}
             </CheckRow>
 
-            {/* Água */}
             <WaterInput item={afternoon.water} onUpdate={updateAfternoonWater} accent="blue" />
 
-            {/* Fruta */}
             <FruitPicker
               label="🍎 Fruta"
               item={afternoon.fruit}
@@ -391,7 +393,6 @@ export default function Home() {
               accent="blue"
             />
 
-            {/* Exercícios */}
             <ExerciseSection
               exercises={afternoon.exercises}
               onToggle={toggleAfternoonExercise}
