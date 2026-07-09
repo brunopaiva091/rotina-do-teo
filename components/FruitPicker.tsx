@@ -4,8 +4,18 @@ import StarRating from './StarRating';
 import type { FruitItem } from '@/lib/types';
 
 const FRUITS = [
-  'Banana', 'Maçã', 'Pera', 'Ameixa', 'Abacate', 'Goiaba',
-  'Mamão', 'Melancia', 'Melão', 'Pitaya', 'Abacaxi', 'Laranja',
+  { name: 'Banana', emoji: '🍌' },
+  { name: 'Maçã', emoji: '🍎' },
+  { name: 'Pera', emoji: '🍐' },
+  { name: 'Ameixa', emoji: '🍑' },
+  { name: 'Abacate', emoji: '🥑' },
+  { name: 'Goiaba', emoji: '🍈' },
+  { name: 'Mamão', emoji: '🥭' },
+  { name: 'Melancia', emoji: '🍉' },
+  { name: 'Melão', emoji: '🍋' },
+  { name: 'Pitaya', emoji: '🌸' },
+  { name: 'Abacaxi', emoji: '🍍' },
+  { name: 'Laranja', emoji: '🍊' },
 ];
 
 interface Props {
@@ -18,76 +28,76 @@ interface Props {
 }
 
 export default function FruitPicker({ item, label, onToggle, onFruitToggle, onRate, accent = 'amber' }: Props) {
+  const borderIdle = accent === 'amber'
+    ? 'border-amber-100 hover:border-amber-300'
+    : 'border-violet-100 hover:border-violet-300';
+  const checkIdle = accent === 'amber'
+    ? 'bg-amber-50 border-amber-200 hover:border-amber-400'
+    : 'bg-violet-50 border-violet-200 hover:border-violet-400';
+
   return (
-    <div className={`rounded-2xl border transition-all ${
-      item.done
-        ? 'bg-green-50 border-green-200'
-        : accent === 'amber'
-        ? 'bg-white border-amber-100 hover:border-amber-300'
-        : 'bg-white border-blue-100 hover:border-blue-300'
+    <div className={`rounded-3xl border transition-all shadow-sm ${
+      item.done ? 'bg-emerald-50 border-emerald-100' : `bg-white ${borderIdle}`
     }`}>
-      {/* Linha principal */}
       <div className="flex items-center gap-3 p-4">
         <button
           onClick={onToggle}
-          className={`w-8 h-8 rounded-xl border-2 flex items-center justify-center flex-shrink-0 transition-all ${
+          className={`w-10 h-10 rounded-2xl border-2 flex items-center justify-center flex-shrink-0 transition-all ${
             item.done
-              ? 'bg-green-500 border-green-500 text-white shadow-sm'
-              : 'border-gray-300 hover:border-green-400 bg-white'
+              ? 'bg-emerald-500 border-emerald-500 text-white shadow-md shadow-emerald-100'
+              : checkIdle
           }`}
           aria-label={item.done ? 'Desmarcar' : 'Marcar como feito'}
         >
-          {item.done && <span className="text-base font-bold">✓</span>}
+          {item.done && <span className="text-lg font-bold">✓</span>}
         </button>
 
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className={`font-semibold text-base ${item.done ? 'text-green-700' : 'text-gray-700'}`}>
+            <span className={`font-bold text-base ${item.done ? 'text-emerald-700' : 'text-gray-800'}`}>
               {label}
             </span>
             {item.time && (
-              <span className="text-xs text-gray-500 bg-gray-100 px-2.5 py-1 rounded-full font-medium">
+              <span className="text-xs text-gray-400 bg-gray-100 px-2.5 py-1 rounded-full">
                 🕐 {item.time}
               </span>
             )}
           </div>
           {item.fruits.length > 0 && (
-            <p className="text-xs text-green-600 font-medium mt-0.5">
+            <p className="text-xs text-emerald-600 font-semibold mt-0.5">
               {item.fruits.join(' · ')}
             </p>
           )}
         </div>
       </div>
 
-      {/* Picker de frutas + estrelas (só aparece quando marcado) */}
       {item.done && (
         <div className="px-4 pb-4 space-y-4">
-          {/* Seleção de frutas */}
           <div>
-            <p className="text-xs text-gray-500 font-medium mb-2">Qual fruta?</p>
-            <div className="flex flex-wrap gap-2">
-              {FRUITS.map((fruit) => {
-                const selected = item.fruits.includes(fruit);
+            <p className="text-xs text-gray-400 font-bold mb-2.5 uppercase tracking-widest">Qual fruta?</p>
+            <div className="grid grid-cols-3 gap-2">
+              {FRUITS.map(({ name, emoji }) => {
+                const selected = item.fruits.includes(name);
                 return (
                   <button
-                    key={fruit}
-                    onClick={() => onFruitToggle(fruit)}
-                    className={`px-3 py-1.5 rounded-xl text-sm font-medium transition-all ${
+                    key={name}
+                    onClick={() => onFruitToggle(name)}
+                    className={`flex flex-col items-center gap-1 py-3 px-1 rounded-2xl font-semibold transition-all ${
                       selected
-                        ? 'bg-green-500 text-white shadow-sm'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        ? 'bg-emerald-500 text-white shadow-md shadow-emerald-100'
+                        : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-100'
                     }`}
                   >
-                    {fruit}
+                    <span className="text-2xl">{emoji}</span>
+                    <span className="text-xs leading-tight">{name}</span>
                   </button>
                 );
               })}
             </div>
           </div>
 
-          {/* Estrelas */}
           <div>
-            <p className="text-xs text-gray-500 font-medium mb-1">Como o Téo aceitou?</p>
+            <p className="text-xs text-gray-400 font-bold mb-2 uppercase tracking-widest">Como o Téo aceitou?</p>
             <StarRating stars={item.stars} onChange={onRate} />
           </div>
         </div>
